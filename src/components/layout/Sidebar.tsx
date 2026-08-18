@@ -17,7 +17,11 @@ function SidebarContent() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-16 items-center gap-3 border-b px-5">
+      <Link
+        to="/"
+        aria-label="Ir al inicio"
+        className="flex h-16 items-center gap-3 border-b px-5 transition-colors hover:bg-muted/60"
+      >
         <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary font-heading text-sm font-bold text-primary-foreground">
           N
         </span>
@@ -27,7 +31,7 @@ function SidebarContent() {
             {data.meta.environment}
           </span>
         </div>
-      </div>
+      </Link>
 
       <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Navegación principal">
         {navSections.map((section) => (
