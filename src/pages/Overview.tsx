@@ -17,7 +17,7 @@ import { Sparkline } from "@/components/charts/Sparkline";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatCompact, formatCurrency, formatNumber, initials, timeAgo } from "@/lib/format";
+import { formatCurrency, formatNumber, initials, timeAgo } from "@/lib/format";
 
 function StatCard({
   label,
@@ -197,7 +197,7 @@ export function Overview() {
           format={formatNumber}
           icon={ShoppingCart}
           sparkline={activity.map((point) => point.pedidos)}
-          footnote={`mes +${formatCompact(overview.newMonth)} nuevos usuarios`}
+          footnote={`hoy +${formatNumber(activity[activity.length - 1]?.pedidos ?? 0)} pedidos`}
         />
         <StatCard
           label="Ingresos"

@@ -110,6 +110,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           open ? "translate-x-0" : "-translate-x-full",
         )}
         aria-label="Navegación principal"
+        aria-hidden={!open}
+        inert={!open}
       >
         <button
           type="button"
