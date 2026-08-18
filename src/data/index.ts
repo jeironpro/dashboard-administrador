@@ -26,6 +26,7 @@ export type {
   QueueHealth,
   ResourceHealth,
   Role,
+  Severity,
   ScheduledReport,
   ServiceHealth,
   SystemError,

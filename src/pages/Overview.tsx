@@ -16,8 +16,16 @@ import { ActivityChart } from "@/components/charts/ActivityChart";
 import { Sparkline } from "@/components/charts/Sparkline";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { formatCurrency, formatNumber, initials, timeAgo } from "@/lib/format";
+import { orderStatusStyles, severityStyles } from "@/lib/status";
 
 function StatCard({
   label,
@@ -43,19 +51,15 @@ function StatCard({
           <p className="mono-label text-muted-foreground">{label}</p>
           <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
         </div>
-        <p className="tabular mt-2 text-2xl font-semibold tracking-tight">{format(count)}</p>
+        <p className="tabular mt-2 text-2xl font-semibold tracking-tight">
+          {format(count)}
+        </p>
         <p className="mt-1 text-xs text-muted-foreground">{footnote}</p>
         <Sparkline values={sparkline} className="mt-3" />
       </CardContent>
     </Card>
   );
 }
-
-const severityVariant: Record<string, "destructive" | "warning" | "info"> = {
-  alta: "destructive",
-  media: "warning",
-  baja: "info",
-};
 
 function AlertsPanel() {
   return (
@@ -72,13 +76,14 @@ function AlertsPanel() {
       <CardContent className="space-y-3">
         {data.alerts.slice(0, 5).map((alert) => (
           <div key={alert.id} className="flex gap-3 rounded-md border p-3">
-            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <AlertTriangle
+              className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
+              aria-hidden="true"
+            />
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-2">
                 <p className="truncate text-sm font-medium">{alert.title}</p>
-                <Badge variant={severityVariant[alert.severity]} className="mono-label shrink-0 text-[10px]">
-                  {alert.severity}
-                </Badge>
+                <StatusBadge {...severityStyles[alert.severity]} className="shrink-0" />
               </div>
               <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
                 {alert.description}
@@ -143,19 +148,10 @@ function RecentOrders() {
                 {order.id} · {timeAgo(order.date)}
               </p>
             </div>
-            <span className="tabular shrink-0 text-sm font-medium">{formatCurrency(order.amount)}</span>
-            <Badge
-              variant={
-                order.status === "completado"
-                  ? "success"
-                  : order.status === "fallido"
-                    ? "destructive"
-                    : "warning"
-              }
-              className="mono-label shrink-0 text-[10px]"
-            >
-              {order.status}
-            </Badge>
+            <span className="tabular shrink-0 text-sm font-medium">
+              {formatCurrency(order.amount)}
+            </span>
+            <StatusBadge {...orderStatusStyles[order.status]} className="shrink-0" />
           </div>
         ))}
       </CardContent>
@@ -166,9 +162,9 @@ function RecentOrders() {
 export function Overview() {
   const reveal = useReveal<HTMLDivElement>(80);
   const { overview, activity } = data;
-  const ingresos = activity.map((point) => point.ingresos);
-  const sesiones = activity.map((point) => point.sesiones);
-  const usuarios = activity.map((point) => point.usuarios);
+  const revenue = activity.map((point) => point.revenue);
+  const sessions = activity.map((point) => point.sessions);
+  const users = activity.map((point) => point.users);
 
   return (
     <div className="space-y-6">
@@ -176,7 +172,8 @@ export function Overview() {
         <div>
           <h2 className="text-xl font-semibold">Resumen general</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Estado de la plataforma a {new Date(data.meta.generatedAt).toLocaleString("es-ES")}.
+            Estado de la plataforma a{" "}
+            {new Date(data.meta.generatedAt).toLocaleString("es-ES")}.
           </p>
         </div>
         <p className="mono-label text-muted-foreground">últimos 30 días</p>
@@ -188,7 +185,7 @@ export function Overview() {
           value={overview.totalUsers}
           format={formatNumber}
           icon={Users}
-          sparkline={usuarios}
+          sparkline={users}
           footnote={`hoy +${overview.newToday} · semana +${overview.newWeek}`}
         />
         <StatCard
@@ -196,15 +193,15 @@ export function Overview() {
           value={overview.totalOrders}
           format={formatNumber}
           icon={ShoppingCart}
-          sparkline={activity.map((point) => point.pedidos)}
-          footnote={`hoy +${formatNumber(activity[activity.length - 1]?.pedidos ?? 0)} pedidos`}
+          sparkline={activity.map((point) => point.orders)}
+          footnote={`hoy +${formatNumber(activity[activity.length - 1]?.orders ?? 0)} pedidos`}
         />
         <StatCard
           label="Ingresos"
           value={overview.totalRevenue}
           format={formatCurrency}
           icon={Banknote}
-          sparkline={ingresos}
+          sparkline={revenue}
           footnote="acumulado del periodo"
         />
         <StatCard
@@ -212,7 +209,7 @@ export function Overview() {
           value={overview.conversionRate}
           format={(value) => `${value.toFixed(1)} %`}
           icon={Percent}
-          sparkline={sesiones.map((v, i) => v / Math.max(activity[i]?.pedidos ?? 1, 1))}
+          sparkline={sessions.map((v, i) => v / Math.max(activity[i]?.orders ?? 1, 1))}
           footnote={`${formatNumber(overview.openAlerts)} alertas abiertas`}
         />
       </div>
@@ -226,13 +223,18 @@ export function Overview() {
                 <CardDescription>Pedidos por día</CardDescription>
               </div>
               <span className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="inline-block h-2 w-2 rounded-sm bg-accent" aria-hidden="true" />
+                <span
+                  className="inline-block h-2 w-2 rounded-sm bg-accent"
+                  aria-hidden="true"
+                />
                 hoy
               </span>
             </div>
           </CardHeader>
           <CardContent>
-            <ActivityChart data={activity.map((point) => ({ label: point.date, value: point.pedidos }))} />
+            <ActivityChart
+              data={activity.map((point) => ({ label: point.date, value: point.orders }))}
+            />
           </CardContent>
         </Card>
 

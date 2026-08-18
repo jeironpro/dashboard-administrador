@@ -10,20 +10,26 @@ import {
 
 import { data } from "@/data";
 import type { MetricSeries } from "@/data";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { healthStateStyles } from "@/lib/status";
 
-function HealthBadge({ status }: { status: string }) {
-  const variant = status === "operativo" ? "success" : status === "degradado" ? "warning" : "destructive";
-  return (
-    <Badge variant={variant} className="mono-label text-[10px]">
-      {status}
-    </Badge>
-  );
-}
-
-function ResourceSeries({ series, label, icon: Icon }: { series: MetricSeries; label: string; icon: typeof Cpu }) {
+function ResourceSeries({
+  series,
+  label,
+  icon: Icon,
+}: {
+  series: MetricSeries;
+  label: string;
+  icon: typeof Cpu;
+}) {
   const width = 320;
   const height = 72;
   const max = Math.max(...series.values, 100);
@@ -43,9 +49,16 @@ function ResourceSeries({ series, label, icon: Icon }: { series: MetricSeries; l
           <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           <p className="text-sm font-semibold">{label}</p>
         </div>
-        <span className="tabular text-sm font-medium">{series.values[series.values.length - 1]} %</span>
+        <span className="tabular text-sm font-medium">
+          {series.values[series.values.length - 1]} %
+        </span>
       </div>
-      <svg viewBox={`0 0 ${width} ${height}`} className="mt-3 h-16 w-full" aria-hidden="true" preserveAspectRatio="none">
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        className="mt-3 h-16 w-full"
+        aria-hidden="true"
+        preserveAspectRatio="none"
+      >
         <polygon points={areaPoints} fill="var(--color-accent)" opacity="0.08" />
         <polyline
           points={points}
@@ -58,7 +71,9 @@ function ResourceSeries({ series, label, icon: Icon }: { series: MetricSeries; l
         />
       </svg>
       <div className="mt-1 flex justify-between">
-        <span className="mono-label text-[10px] text-muted-foreground">{series.labels[0]}</span>
+        <span className="mono-label text-[10px] text-muted-foreground">
+          {series.labels[0]}
+        </span>
         <span className="mono-label text-[10px] text-muted-foreground">
           {series.labels[series.labels.length - 1]}
         </span>
@@ -69,7 +84,9 @@ function ResourceSeries({ series, label, icon: Icon }: { series: MetricSeries; l
 
 export function Health() {
   const { database, resources, services, queues } = data.health;
-  const connectionPct = Math.round((database.connections / database.maxConnections) * 100);
+  const connectionPct = Math.round(
+    (database.connections / database.maxConnections) * 100,
+  );
 
   return (
     <div className="space-y-6">
@@ -88,7 +105,7 @@ export function Health() {
               <Database className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
               Base de datos
             </CardTitle>
-            <HealthBadge status={database.status} />
+            <StatusBadge {...healthStateStyles[database.status]} />
           </div>
           <CardDescription>{database.engine}</CardDescription>
         </CardHeader>
@@ -109,7 +126,10 @@ export function Health() {
             <p className="mono-label text-muted-foreground">conexiones</p>
             <p className="tabular mt-1 text-lg font-semibold">
               {database.connections}
-              <span className="text-sm text-muted-foreground"> / {database.maxConnections}</span>
+              <span className="text-sm text-muted-foreground">
+                {" "}
+                / {database.maxConnections}
+              </span>
             </p>
             <Progress value={connectionPct} className="mt-2 h-1.5" />
           </div>
@@ -152,7 +172,7 @@ export function Health() {
                   <Timer className="h-3.5 w-3.5" aria-hidden="true" />
                   {service.latencyMs} ms
                 </span>
-                <HealthBadge status={service.status} />
+                <StatusBadge {...healthStateStyles[service.status]} />
               </div>
             ))}
           </div>
@@ -167,21 +187,27 @@ export function Health() {
             <div key={queue.id} className="surface-hairline rounded-lg p-5">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-semibold">{queue.name}</p>
-                <HealthBadge status={queue.status} />
+                <StatusBadge {...healthStateStyles[queue.status]} />
               </div>
               <div className="mt-4 grid grid-cols-3 gap-2">
                 <div>
-                  <p className="mono-label text-[10px] text-muted-foreground">pendientes</p>
+                  <p className="mono-label text-[10px] text-muted-foreground">
+                    pendientes
+                  </p>
                   <p className="tabular text-lg font-semibold">{queue.pending}</p>
                 </div>
                 <div>
                   <p className="mono-label text-[10px] text-muted-foreground">fallidos</p>
-                  <p className={`tabular text-lg font-semibold ${queue.failed > 0 ? "text-destructive" : ""}`}>
+                  <p
+                    className={`tabular text-lg font-semibold ${queue.failed > 0 ? "text-destructive" : ""}`}
+                  >
                     {queue.failed}
                   </p>
                 </div>
                 <div>
-                  <p className="mono-label text-[10px] text-muted-foreground">procesados</p>
+                  <p className="mono-label text-[10px] text-muted-foreground">
+                    procesados
+                  </p>
                   <p className="tabular text-lg font-semibold">{queue.processed}</p>
                 </div>
               </div>

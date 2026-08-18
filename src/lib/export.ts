@@ -21,14 +21,14 @@ function escapeXml(text: string): string {
 }
 
 // Construye el contenido CSV de una tabla (primera fila = cabecera).
-export function toCsv(headers: string[], rows: Cell[][]): string {
+function toCsv(headers: string[], rows: Cell[][]): string {
   const lines = [headers, ...rows].map((row) => row.map(escapeCsv).join(","));
   // BOM para que Excel detecte UTF-8 correctamente.
   return `\uFEFF${lines.join("\n")}`;
 }
 
 // Construye un documento SpreadsheetML (.xls) a partir de una tabla.
-export function toExcelXml(sheetName: string, headers: string[], rows: Cell[][]): string {
+function toExcelXml(sheetName: string, headers: string[], rows: Cell[][]): string {
   const headerRow = headers
     .map((header) => `<Cell><Data ss:Type="String">${escapeXml(header)}</Data></Cell>`)
     .join("");
@@ -36,7 +36,10 @@ export function toExcelXml(sheetName: string, headers: string[], rows: Cell[][])
     .map(
       (row) =>
         `<Row>${row
-          .map((cell) => `<Cell><Data ss:Type="String">${escapeXml(String(cell ?? ""))}</Data></Cell>`)
+          .map(
+            (cell) =>
+              `<Cell><Data ss:Type="String">${escapeXml(String(cell ?? ""))}</Data></Cell>`,
+          )
           .join("")}</Row>`,
     )
     .join("");

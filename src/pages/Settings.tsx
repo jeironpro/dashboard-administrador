@@ -12,7 +12,6 @@ import {
 
 import { data } from "@/data";
 import type { EnvVar } from "@/data";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,16 +26,9 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { formatDateTime } from "@/lib/format";
-
-function HealthBadge({ status }: { status: string }) {
-  const variant = status === "operativo" ? "success" : status === "degradado" ? "warning" : "destructive";
-  return (
-    <Badge variant={variant} className="mono-label text-[10px]">
-      {status}
-    </Badge>
-  );
-}
+import { healthStateStyles } from "@/lib/status";
 
 function EnvVarsTab() {
   const [vars, setVars] = useState<EnvVar[]>(data.envVars);
@@ -47,7 +39,9 @@ function EnvVarsTab() {
   function save() {
     if (!editing) return;
     setVars((current) =>
-      current.map((item) => (item.key === editing.key ? { ...item, value: draft } : item)),
+      current.map((item) =>
+        item.key === editing.key ? { ...item, value: draft } : item,
+      ),
     );
     setEditing(null);
   }
@@ -55,10 +49,13 @@ function EnvVarsTab() {
   return (
     <div className="space-y-4">
       <div className="flex items-start gap-3 rounded-md border border-warning/40 bg-warning/10 p-4">
-        <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
+        <TriangleAlert
+          className="mt-0.5 h-4 w-4 shrink-0 text-warning"
+          aria-hidden="true"
+        />
         <p className="text-sm text-foreground">
-          Los valores secretos se guardan encriptados y se registran en la auditoría. Edita con
-          cuidado: un cambio inválido puede afectar a producción.
+          Los valores secretos se guardan encriptados y se registran en la auditoría.
+          Edita con cuidado: un cambio inválido puede afectar a producción.
         </p>
       </div>
 
@@ -67,14 +64,21 @@ function EnvVarsTab() {
           {vars.map((item) => {
             const revealed = visible[item.key];
             return (
-              <div key={item.key} className="grid grid-cols-1 gap-2 p-4 md:grid-cols-[240px_1fr_auto] md:items-center md:gap-4">
+              <div
+                key={item.key}
+                className="grid grid-cols-1 gap-2 p-4 md:grid-cols-[240px_1fr_auto] md:items-center md:gap-4"
+              >
                 <div className="leading-tight">
                   <p className="mono-label text-primary">{item.key}</p>
                   <p className="text-xs text-muted-foreground">{item.scope}</p>
                 </div>
                 <div className="min-w-0">
-                  <p className="truncate font-mono text-sm">{revealed ? item.value : item.masked ? "••••••••••••" : item.value}</p>
-                  <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">{item.description}</p>
+                  <p className="truncate font-mono text-sm">
+                    {revealed ? item.value : item.masked ? "••••••••••••" : item.value}
+                  </p>
+                  <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+                    {item.description}
+                  </p>
                 </div>
                 <div className="flex items-center gap-1.5">
                   {item.masked && (
@@ -82,9 +86,15 @@ function EnvVarsTab() {
                       variant="ghost"
                       size="icon"
                       aria-label={revealed ? "Ocultar valor" : "Mostrar valor"}
-                      onClick={() => setVisible((c) => ({ ...c, [item.key]: !c[item.key] }))}
+                      onClick={() =>
+                        setVisible((c) => ({ ...c, [item.key]: !c[item.key] }))
+                      }
                     >
-                      {revealed ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {revealed ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </Button>
                   )}
                   {item.editable ? (
@@ -99,7 +109,9 @@ function EnvVarsTab() {
                       <Pencil className="h-3.5 w-3.5" aria-hidden="true" /> Editar
                     </Button>
                   ) : (
-                    <span className="mono-label text-[10px] text-muted-foreground">solo lectura</span>
+                    <span className="mono-label text-[10px] text-muted-foreground">
+                      solo lectura
+                    </span>
                   )}
                 </div>
               </div>
@@ -118,7 +130,11 @@ function EnvVarsTab() {
           </DialogHeader>
           <div className="grid gap-2">
             <Label htmlFor="env-value">Valor</Label>
-            <Input id="env-value" value={draft} onChange={(event) => setDraft(event.target.value)} />
+            <Input
+              id="env-value"
+              value={draft}
+              onChange={(event) => setDraft(event.target.value)}
+            />
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditing(null)}>
@@ -146,10 +162,12 @@ function IntegrationsTab() {
               </span>
               <div className="leading-tight">
                 <p className="text-sm font-semibold">{integration.name}</p>
-                <p className="mono-label text-[10px] text-muted-foreground">{integration.kind}</p>
+                <p className="mono-label text-[10px] text-muted-foreground">
+                  {integration.kind}
+                </p>
               </div>
             </div>
-            <HealthBadge status={integration.status} />
+            <StatusBadge {...healthStateStyles[integration.status]} />
           </div>
           <p className="mt-3 text-sm text-muted-foreground">{integration.description}</p>
           <p className="mono-label mt-2 text-[10px] text-muted-foreground">
@@ -184,18 +202,25 @@ function FeatureFlagsTab() {
     <div className="surface-hairline overflow-hidden">
       <div className="divide-y">
         {flags.map((flag) => (
-          <div key={flag.key} className="grid grid-cols-1 gap-3 p-4 md:grid-cols-[1fr_auto] md:items-center md:gap-6">
+          <div
+            key={flag.key}
+            className="grid grid-cols-1 gap-3 p-4 md:grid-cols-[1fr_auto] md:items-center md:gap-6"
+          >
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <Flag className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                 <p className="text-sm font-medium">{flag.name}</p>
-                <span className="mono-label text-[10px] text-muted-foreground">{flag.key}</span>
+                <span className="mono-label text-[10px] text-muted-foreground">
+                  {flag.key}
+                </span>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">{flag.description}</p>
               {flag.enabled && (
                 <div className="mt-3 flex items-center gap-3">
                   <Progress value={flag.rollout} className="h-1.5 max-w-48" />
-                  <span className="tabular text-xs text-muted-foreground">{flag.rollout} %</span>
+                  <span className="tabular text-xs text-muted-foreground">
+                    {flag.rollout} %
+                  </span>
                 </div>
               )}
             </div>
@@ -203,7 +228,9 @@ function FeatureFlagsTab() {
               checked={flag.enabled}
               onCheckedChange={(checked) =>
                 setFlags((current) =>
-                  current.map((item) => (item.key === flag.key ? { ...item, enabled: checked } : item)),
+                  current.map((item) =>
+                    item.key === flag.key ? { ...item, enabled: checked } : item,
+                  ),
                 )
               }
               aria-label={`Activar ${flag.name}`}

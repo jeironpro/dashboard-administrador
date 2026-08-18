@@ -11,7 +11,6 @@ import {
 
 import { data } from "@/data";
 import type { Article, Product, PublishStatus } from "@/data";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -47,22 +46,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { formatCurrency, formatDateTime, formatNumber } from "@/lib/format";
-
-const publishLabel: Record<PublishStatus, string> = {
-  activo: "Activo",
-  borrador: "Borrador",
-  archivado: "Archivado",
-};
-
-function PublishBadge({ status }: { status: PublishStatus }) {
-  const variant = status === "activo" ? "success" : status === "borrador" ? "warning" : "secondary";
-  return (
-    <Badge variant={variant} className="mono-label text-[10px]">
-      {publishLabel[status]}
-    </Badge>
-  );
-}
+import { publishStatusStyles } from "@/lib/status";
 
 function applyStatus<T extends { id: string }>(
   items: T[],
@@ -113,7 +99,10 @@ function ProductsPanel() {
     <div className="space-y-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <Search
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -122,7 +111,10 @@ function ProductsPanel() {
             aria-label="Buscar producto"
           />
         </div>
-        <Select value={status} onValueChange={(value) => setStatus(value as "todos" | PublishStatus)}>
+        <Select
+          value={status}
+          onValueChange={(value) => setStatus(value as "todos" | PublishStatus)}
+        >
           <SelectTrigger className="w-full md:w-44" aria-label="Filtrar por estado">
             <SelectValue />
           </SelectTrigger>
@@ -153,7 +145,10 @@ function ProductsPanel() {
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">
+                <TableCell
+                  colSpan={6}
+                  className="py-10 text-center text-sm text-muted-foreground"
+                >
                   Sin productos para los filtros actuales.
                 </TableCell>
               </TableRow>
@@ -163,16 +158,23 @@ function ProductsPanel() {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted">
-                        <Package className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                        <Package
+                          className="h-4 w-4 text-muted-foreground"
+                          aria-hidden="true"
+                        />
                       </span>
                       <div className="min-w-0 leading-tight">
                         <p className="truncate text-sm font-medium">{product.name}</p>
-                        <p className="text-xs text-muted-foreground">{formatDateTime(product.updatedAt)}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatDateTime(product.updatedAt)}
+                        </p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    <span className="mono-label text-muted-foreground">{product.sku}</span>
+                    <span className="mono-label text-muted-foreground">
+                      {product.sku}
+                    </span>
                   </TableCell>
                   <TableCell className="hidden lg:table-cell">
                     <span className="text-sm">{product.category}</span>
@@ -183,30 +185,53 @@ function ProductsPanel() {
                     </span>
                   </TableCell>
                   <TableCell>
-                    <PublishBadge status={product.status} />
+                    <StatusBadge {...publishStatusStyles[product.status]} />
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" aria-label={`Acciones de ${product.name}`}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Acciones de ${product.name}`}
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuLabel className="truncate">{product.name}</DropdownMenuLabel>
+                        <DropdownMenuLabel className="truncate">
+                          {product.name}
+                        </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => setProducts((c) => applyStatus(c, product.id, "activo"))}>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            setProducts((c) => applyStatus(c, product.id, "activo"))
+                          }
+                        >
                           Publicar
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setProducts((c) => applyStatus(c, product.id, "borrador"))}>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            setProducts((c) => applyStatus(c, product.id, "borrador"))
+                          }
+                        >
                           Guardar borrador
                         </DropdownMenuItem>
                         {product.status === "archivado" ? (
-                          <DropdownMenuItem onClick={() => setProducts((c) => applyStatus(c, product.id, "activo"))}>
-                            <ArchiveRestore className="h-4 w-4" aria-hidden="true" /> Restaurar
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setProducts((c) => applyStatus(c, product.id, "activo"))
+                            }
+                          >
+                            <ArchiveRestore className="h-4 w-4" aria-hidden="true" />{" "}
+                            Restaurar
                           </DropdownMenuItem>
                         ) : (
-                          <DropdownMenuItem onClick={() => setProducts((c) => applyStatus(c, product.id, "archivado"))}>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setProducts((c) => applyStatus(c, product.id, "archivado"))
+                            }
+                          >
                             <Archive className="h-4 w-4" aria-hidden="true" /> Archivar
                           </DropdownMenuItem>
                         )}
@@ -253,7 +278,9 @@ function ProductsPanel() {
                   type="number"
                   min="0"
                   value={form.price}
-                  onChange={(event) => setForm({ ...form, price: Number(event.target.value) })}
+                  onChange={(event) =>
+                    setForm({ ...form, price: Number(event.target.value) })
+                  }
                 />
               </div>
             </div>
@@ -301,7 +328,10 @@ function ArticlesPanel() {
     <div className="space-y-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <Search
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -310,7 +340,10 @@ function ArticlesPanel() {
             aria-label="Buscar artículo"
           />
         </div>
-        <Select value={status} onValueChange={(value) => setStatus(value as "todos" | PublishStatus)}>
+        <Select
+          value={status}
+          onValueChange={(value) => setStatus(value as "todos" | PublishStatus)}
+        >
           <SelectTrigger className="w-full md:w-44" aria-label="Filtrar por estado">
             <SelectValue />
           </SelectTrigger>
@@ -338,7 +371,10 @@ function ArticlesPanel() {
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">
+                <TableCell
+                  colSpan={6}
+                  className="py-10 text-center text-sm text-muted-foreground"
+                >
                   Sin artículos para los filtros actuales.
                 </TableCell>
               </TableRow>
@@ -348,12 +384,17 @@ function ArticlesPanel() {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted">
-                        <FileText className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                        <FileText
+                          className="h-4 w-4 text-muted-foreground"
+                          aria-hidden="true"
+                        />
                       </span>
                       <div className="min-w-0 leading-tight">
                         <p className="truncate text-sm font-medium">{article.title}</p>
                         <p className="text-xs text-muted-foreground">
-                          {article.status === "activo" ? formatDateTime(article.publishedAt) : "sin publicar"}
+                          {article.status === "activo"
+                            ? formatDateTime(article.publishedAt)
+                            : "sin publicar"}
                         </p>
                       </div>
                     </div>
@@ -368,30 +409,53 @@ function ArticlesPanel() {
                     <span className="tabular text-sm">{formatNumber(article.views)}</span>
                   </TableCell>
                   <TableCell>
-                    <PublishBadge status={article.status} />
+                    <StatusBadge {...publishStatusStyles[article.status]} />
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" aria-label={`Acciones de ${article.title}`}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Acciones de ${article.title}`}
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuLabel className="truncate">Acciones</DropdownMenuLabel>
+                        <DropdownMenuLabel className="truncate">
+                          Acciones
+                        </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => setArticles((c) => applyStatus(c, article.id, "activo"))}>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            setArticles((c) => applyStatus(c, article.id, "activo"))
+                          }
+                        >
                           Publicar
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setArticles((c) => applyStatus(c, article.id, "borrador"))}>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            setArticles((c) => applyStatus(c, article.id, "borrador"))
+                          }
+                        >
                           Guardar borrador
                         </DropdownMenuItem>
                         {article.status === "archivado" ? (
-                          <DropdownMenuItem onClick={() => setArticles((c) => applyStatus(c, article.id, "activo"))}>
-                            <ArchiveRestore className="h-4 w-4" aria-hidden="true" /> Restaurar
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setArticles((c) => applyStatus(c, article.id, "activo"))
+                            }
+                          >
+                            <ArchiveRestore className="h-4 w-4" aria-hidden="true" />{" "}
+                            Restaurar
                           </DropdownMenuItem>
                         ) : (
-                          <DropdownMenuItem onClick={() => setArticles((c) => applyStatus(c, article.id, "archivado"))}>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setArticles((c) => applyStatus(c, article.id, "archivado"))
+                            }
+                          >
                             <Archive className="h-4 w-4" aria-hidden="true" /> Archivar
                           </DropdownMenuItem>
                         )}

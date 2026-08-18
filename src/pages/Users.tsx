@@ -15,7 +15,6 @@ import {
 import { data } from "@/data";
 import type { Role, User, UserStatus } from "@/data";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -52,6 +51,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { initials, timeAgo } from "@/lib/format";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { userStatusStyles } from "@/lib/status";
 
 const PAGE_SIZE = 8;
 
@@ -62,17 +63,17 @@ const roleLabel: Record<Role, string> = {
   miembro: "Miembro",
 };
 
-const statusLabel: Record<UserStatus, string> = {
-  activo: "Activo",
-  suspendido: "Suspendido",
-  pendiente: "Pendiente",
-};
-
 // Matriz de permisos por rol, mostrada en el panel inferior.
 const rolePermissions: Record<Role, { description: string; permissions: string[] }> = {
   admin: {
     description: "Acceso total a la consola y a la configuración.",
-    permissions: ["Gestionar usuarios", "Editar contenido", "Ver auditoría", "Configurar sistema", "Exportar reportes"],
+    permissions: [
+      "Gestionar usuarios",
+      "Editar contenido",
+      "Ver auditoría",
+      "Configurar sistema",
+      "Exportar reportes",
+    ],
   },
   editor: {
     description: "Crea y modera contenido; no toca usuarios ni configuración.",
@@ -87,15 +88,6 @@ const rolePermissions: Record<Role, { description: string; permissions: string[]
     permissions: ["Ver contenido propio"],
   },
 };
-
-function StatusBadge({ status }: { status: UserStatus }) {
-  const variant = status === "activo" ? "success" : status === "suspendido" ? "destructive" : "warning";
-  return (
-    <Badge variant={variant} className="mono-label text-[10px]">
-      {statusLabel[status]}
-    </Badge>
-  );
-}
 
 interface Notice {
   message: string;
@@ -218,7 +210,8 @@ export function Users() {
         <div>
           <h2 className="text-xl font-semibold">Gestión de usuarios</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {users.length} usuarios · {users.filter((u) => u.status === "activo").length} activos
+            {users.length} usuarios · {users.filter((u) => u.status === "activo").length}{" "}
+            activos
           </p>
         </div>
         <Button onClick={openCreate}>
@@ -230,7 +223,10 @@ export function Users() {
       {/* Filtros */}
       <div className="flex flex-col gap-3 md:flex-row md:items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <Search
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
           <Input
             value={query}
             onChange={(event) => {
@@ -242,7 +238,13 @@ export function Users() {
             aria-label="Buscar usuarios"
           />
         </div>
-        <Select value={role} onValueChange={(value) => { setRole(value as "todos" | Role); setPage(1); }}>
+        <Select
+          value={role}
+          onValueChange={(value) => {
+            setRole(value as "todos" | Role);
+            setPage(1);
+          }}
+        >
           <SelectTrigger className="w-full md:w-44" aria-label="Filtrar por rol">
             <SelectValue />
           </SelectTrigger>
@@ -254,7 +256,13 @@ export function Users() {
             <SelectItem value="miembro">Miembro</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={status} onValueChange={(value) => { setStatus(value as "todos" | UserStatus); setPage(1); }}>
+        <Select
+          value={status}
+          onValueChange={(value) => {
+            setStatus(value as "todos" | UserStatus);
+            setPage(1);
+          }}
+        >
           <SelectTrigger className="w-full md:w-44" aria-label="Filtrar por estado">
             <SelectValue />
           </SelectTrigger>
@@ -283,7 +291,10 @@ export function Users() {
           <TableBody>
             {pageRows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">
+                <TableCell
+                  colSpan={6}
+                  className="py-10 text-center text-sm text-muted-foreground"
+                >
                   Sin resultados para los filtros actuales.
                 </TableCell>
               </TableRow>
@@ -299,31 +310,43 @@ export function Users() {
                       </Avatar>
                       <div className="min-w-0 leading-tight">
                         <p className="truncate text-sm font-medium">{user.name}</p>
-                        <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {user.email}
+                        </p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    <span className="mono-label text-muted-foreground">{roleLabel[user.role]}</span>
+                    <span className="mono-label text-muted-foreground">
+                      {roleLabel[user.role]}
+                    </span>
                   </TableCell>
                   <TableCell>
-                    <StatusBadge status={user.status} />
+                    <StatusBadge {...userStatusStyles[user.status]} />
                   </TableCell>
                   <TableCell className="hidden lg:table-cell">
                     <span className="text-sm">{user.plan}</span>
                   </TableCell>
                   <TableCell className="hidden xl:table-cell">
-                    <span className="text-sm text-muted-foreground">{timeAgo(user.lastLogin)}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {timeAgo(user.lastLogin)}
+                    </span>
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" aria-label={`Acciones de ${user.name}`}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Acciones de ${user.name}`}
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuLabel className="truncate">{user.name}</DropdownMenuLabel>
+                        <DropdownMenuLabel className="truncate">
+                          {user.name}
+                        </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => openEdit(user)}>
                           <Eye className="h-4 w-4" aria-hidden="true" /> Ver / editar
@@ -331,7 +354,8 @@ export function Users() {
                         <DropdownMenuItem onClick={() => toggleSuspend(user)}>
                           {user.status === "suspendido" ? (
                             <>
-                              <CheckCircle2 className="h-4 w-4" aria-hidden="true" /> Reactivar
+                              <CheckCircle2 className="h-4 w-4" aria-hidden="true" />{" "}
+                              Reactivar
                             </>
                           ) : (
                             <>
@@ -400,11 +424,16 @@ export function Users() {
                   {users.filter((u) => u.role === item).length}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">{rolePermissions[item].description}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {rolePermissions[item].description}
+              </p>
               <ul className="mt-3 space-y-1.5">
                 {rolePermissions[item].permissions.map((permission) => (
                   <li key={permission} className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
+                    <CheckCircle2
+                      className="h-3.5 w-3.5 text-muted-foreground"
+                      aria-hidden="true"
+                    />
                     {permission}
                   </li>
                 ))}
@@ -446,7 +475,10 @@ export function Users() {
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-2">
                 <Label>Rol</Label>
-                <Select value={form.role} onValueChange={(value) => setForm({ ...form, role: value as Role })}>
+                <Select
+                  value={form.role}
+                  onValueChange={(value) => setForm({ ...form, role: value as Role })}
+                >
                   <SelectTrigger aria-label="Rol">
                     <SelectValue />
                   </SelectTrigger>
@@ -462,7 +494,9 @@ export function Users() {
                 <Label>Estado</Label>
                 <Select
                   value={form.status}
-                  onValueChange={(value) => setForm({ ...form, status: value as UserStatus })}
+                  onValueChange={(value) =>
+                    setForm({ ...form, status: value as UserStatus })
+                  }
                 >
                   <SelectTrigger aria-label="Estado">
                     <SelectValue />
@@ -478,7 +512,10 @@ export function Users() {
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-2">
                 <Label htmlFor="user-plan">Plan</Label>
-                <Select value={form.plan} onValueChange={(value) => setForm({ ...form, plan: value })}>
+                <Select
+                  value={form.plan}
+                  onValueChange={(value) => setForm({ ...form, plan: value })}
+                >
                   <SelectTrigger id="user-plan" aria-label="Plan">
                     <SelectValue />
                   </SelectTrigger>
@@ -502,7 +539,9 @@ export function Users() {
             <div className="flex items-center justify-between rounded-md border p-3">
               <div className="leading-tight">
                 <p className="text-sm font-medium">Cuenta verificada</p>
-                <p className="text-xs text-muted-foreground">Confirma la identidad del titular.</p>
+                <p className="text-xs text-muted-foreground">
+                  Confirma la identidad del titular.
+                </p>
               </div>
               <Switch
                 checked={form.verified}
@@ -516,7 +555,11 @@ export function Users() {
               Cancelar
             </Button>
             <Button onClick={saveUser}>
-              {editing ? <Edit className="h-4 w-4" aria-hidden="true" /> : <Plus className="h-4 w-4" aria-hidden="true" />}
+              {editing ? (
+                <Edit className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <Plus className="h-4 w-4" aria-hidden="true" />
+              )}
               {editing ? "Guardar cambios" : "Crear usuario"}
             </Button>
           </DialogFooter>
@@ -528,7 +571,15 @@ export function Users() {
         <div className="fixed bottom-4 right-4 z-50 flex items-center gap-3 rounded-md border bg-popover px-4 py-3 shadow-lg">
           <p className="text-sm">{notice.message}</p>
           {notice.undo && (
-            <Button variant="link" size="sm" className="px-0" onClick={() => { notice.undo?.(); setNotice(null); }}>
+            <Button
+              variant="link"
+              size="sm"
+              className="px-0"
+              onClick={() => {
+                notice.undo?.();
+                setNotice(null);
+              }}
+            >
               Deshacer
             </Button>
           )}
