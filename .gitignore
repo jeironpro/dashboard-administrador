@@ -12,6 +12,7 @@ node_modules/
 
 # Herramientas locales de Freebuff
 .freebuff/
+.hallmark/
 
 # Build
 dist/
