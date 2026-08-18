@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Bell, Menu, Search } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 
+import { NotificationsPanel } from "./NotificationsPanel";
 import { pageTitleForPath } from "@/lib/nav";
 import { data } from "@/data";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -65,15 +66,7 @@ export function Topbar({ onOpenMenu, onOpenPalette }: TopbarProps) {
         <Search className="h-5 w-5" />
       </Button>
 
-      <Button variant="ghost" size="icon" className="relative" aria-label="Notificaciones">
-        <Bell className="h-5 w-5" />
-        {data.overview.openAlerts > 0 && (
-          <span className="absolute right-1.5 top-1.5 flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-          </span>
-        )}
-      </Button>
+      <NotificationsPanel />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
