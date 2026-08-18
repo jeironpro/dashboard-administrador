@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { AppShell } from "@/components/layout/AppShell";
+import { Overview } from "@/pages/Overview";
 import { Placeholder } from "@/pages/Placeholder";
 
 export default function App() {
@@ -8,7 +9,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<AppShell />}>
-          <Route index element={<Placeholder title="Resumen" />} />
+          <Route index element={<Overview />} />
           <Route path="usuarios" element={<Placeholder title="Usuarios" />} />
           <Route path="contenido" element={<Placeholder title="Contenido" />} />
           <Route path="auditoria" element={<Placeholder title="Auditoría" />} />
