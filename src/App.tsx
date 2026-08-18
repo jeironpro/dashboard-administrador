@@ -12,6 +12,7 @@ const Logs = lazy(() => import("@/pages/Logs"));
 const Settings = lazy(() => import("@/pages/Settings"));
 const Health = lazy(() => import("@/pages/Health"));
 const Reports = lazy(() => import("@/pages/Reports"));
+const Profile = lazy(() => import("@/pages/Profile"));
 
 function PageLoader() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
             <Route path="configuracion" element={<Settings />} />
             <Route path="salud" element={<Health />} />
             <Route path="reportes" element={<Reports />} />
+            <Route path="perfil" element={<Profile />} />
           </Route>
           <Route path="*" element={<Placeholder title="Página no encontrada" />} />
         </Routes>
