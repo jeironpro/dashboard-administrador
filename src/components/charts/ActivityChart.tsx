@@ -12,11 +12,20 @@ interface ActivityChartProps {
 }
 
 const WIDTH = 720;
-const PAD = { top: 16, right: 8, bottom: 30, left: 40 };
+// Padding generoso: deja aire arriba (para la rejilla) y abajo (para las fechas).
+const PAD = { top: 28, right: 12, bottom: 36, left: 44 };
+const GRID_STEPS = 4;
+
+// Redondea el máximo a un valor "limpio" para que las líneas de la rejilla
+// queden dentro del área de dibujo y no pegadas al borde superior.
+function niceMax(value: number): number {
+  const magnitude = value <= 100 ? 50 : 100;
+  return Math.ceil(value / magnitude) * magnitude;
+}
 
 // Gráfico de barras de actividad reciente. Las barras crecen con animejs;
 // la barra de "hoy" es el único acento (señal, no inundación).
-export function ActivityChart({ data, height = 220, className }: ActivityChartProps) {
+export function ActivityChart({ data, height = 240, className }: ActivityChartProps) {
   const barsRef = useRef<SVGGElement>(null);
   const reduced = useReducedMotion();
 
@@ -37,14 +46,16 @@ export function ActivityChart({ data, height = 220, className }: ActivityChartPr
     };
   }, [reduced]);
 
-  const max = Math.max(...data.map((point) => point.value));
+  const max = niceMax(Math.max(...data.map((point) => point.value)));
   const plotW = WIDTH - PAD.left - PAD.right;
   const plotH = height - PAD.top - PAD.bottom;
   const step = plotW / data.length;
   const barW = Math.max(step * 0.6, 3);
 
-  const gridValues = [0.25, 0.5, 0.75, 1].map((fraction) =>
-    Math.round((max * fraction) / 100) * 100,
+  const stepValue = max / GRID_STEPS;
+  const gridValues = Array.from(
+    { length: GRID_STEPS },
+    (_, index) => (index + 1) * stepValue,
   );
 
   return (
@@ -68,7 +79,7 @@ export function ActivityChart({ data, height = 220, className }: ActivityChartPr
               strokeWidth="1"
             />
             <text
-              x={PAD.left - 8}
+              x={PAD.left - 10}
               y={y + 3}
               textAnchor="end"
               className="mono-label fill-muted-foreground"
@@ -113,7 +124,7 @@ export function ActivityChart({ data, height = 220, className }: ActivityChartPr
           <text
             key={point.label}
             x={x}
-            y={height - 8}
+            y={height - 10}
             textAnchor="middle"
             className="mono-label fill-muted-foreground"
             fontSize="10"
