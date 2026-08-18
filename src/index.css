@@ -1,5 +1,6 @@
 @import "../tokens.css";
 @import "tailwindcss";
+@import "tw-animate-css";
 
 /* --- Puente shadcn/ui → tokens Hallmark --- */
 :root {
