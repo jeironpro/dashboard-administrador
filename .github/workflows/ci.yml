@@ -11,13 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Habilitar Corepack
+        run: corepack enable
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: yarn
-
-      - name: Habilitar Corepack
-        run: corepack enable
 
       - name: Instalar dependencias
         run: yarn install --immutable
