@@ -6,6 +6,7 @@ export type PublishStatus = "activo" | "borrador" | "archivado";
 export type OrderStatus = "completado" | "pendiente" | "fallido" | "reembolsado";
 export type LogLevel = "info" | "warning" | "error" | "critical";
 export type HealthState = "operativo" | "degradado" | "caido";
+export type Severity = "alta" | "media" | "baja";
 
 export interface User {
   id: string;
@@ -85,17 +86,17 @@ export interface FailedLogin {
 
 export interface ActivityPoint {
   date: string;
-  usuarios: number;
-  pedidos: number;
-  sesiones: number;
-  ingresos: number;
+  users: number;
+  orders: number;
+  sessions: number;
+  revenue: number;
 }
 
 export interface Alert {
   id: string;
   title: string;
   description: string;
-  severity: "alta" | "media" | "baja";
+  severity: Severity;
   category: string;
   createdAt: string;
 }

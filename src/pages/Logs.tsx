@@ -4,7 +4,6 @@ import { AlertOctagon, KeyRound, ScrollText, Search, ShieldAlert } from "lucide-
 import { data } from "@/data";
 import type { LogLevel } from "@/data";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -22,28 +21,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { formatDateTime, initials, timeAgo } from "@/lib/format";
-
-const levelLabel: Record<LogLevel, string> = {
-  info: "Info",
-  warning: "Aviso",
-  error: "Error",
-  critical: "Crítico",
-};
-
-function LevelBadge({ level }: { level: LogLevel }) {
-  const variant =
-    level === "critical" || level === "error"
-      ? "destructive"
-      : level === "warning"
-        ? "warning"
-        : "info";
-  return (
-    <Badge variant={variant} className="mono-label text-[10px]">
-      {levelLabel[level]}
-    </Badge>
-  );
-}
+import { logLevelStyles } from "@/lib/status";
 
 function AuditTab() {
   const [query, setQuery] = useState("");
@@ -67,7 +47,10 @@ function AuditTab() {
     <div className="space-y-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <Search
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -76,7 +59,10 @@ function AuditTab() {
             aria-label="Buscar en auditoría"
           />
         </div>
-        <Select value={level} onValueChange={(value) => setLevel(value as "todos" | LogLevel)}>
+        <Select
+          value={level}
+          onValueChange={(value) => setLevel(value as "todos" | LogLevel)}
+        >
           <SelectTrigger className="w-full md:w-44" aria-label="Filtrar por nivel">
             <SelectValue />
           </SelectTrigger>
@@ -104,7 +90,10 @@ function AuditTab() {
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="py-10 text-center text-sm text-muted-foreground">
+                <TableCell
+                  colSpan={5}
+                  className="py-10 text-center text-sm text-muted-foreground"
+                >
                   Sin registros para los filtros actuales.
                 </TableCell>
               </TableRow>
@@ -114,8 +103,12 @@ function AuditTab() {
                   <TableCell>
                     <div className="leading-tight">
                       <p className="text-sm font-medium">{log.action}</p>
-                      <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">{log.detail}</p>
-                      <p className="mono-label mt-1 text-[10px] text-muted-foreground">{log.ip}</p>
+                      <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+                        {log.detail}
+                      </p>
+                      <p className="mono-label mt-1 text-[10px] text-muted-foreground">
+                        {log.ip}
+                      </p>
                     </div>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
@@ -132,10 +125,12 @@ function AuditTab() {
                     <span className="text-sm text-muted-foreground">{log.entity}</span>
                   </TableCell>
                   <TableCell>
-                    <LevelBadge level={log.level} />
+                    <StatusBadge {...logLevelStyles[log.level]} />
                   </TableCell>
                   <TableCell className="hidden xl:table-cell">
-                    <span className="text-sm text-muted-foreground">{timeAgo(log.timestamp)}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {timeAgo(log.timestamp)}
+                    </span>
                   </TableCell>
                 </TableRow>
               ))
@@ -156,10 +151,11 @@ function ErrorsTab() {
             <div className="min-w-0">
               <p className="text-sm font-medium">{error.message}</p>
               <p className="mono-label mt-1 text-[10px] text-muted-foreground">
-                {error.service} · {formatDateTime(error.lastSeen)} · {error.occurrences} ocurrencias
+                {error.service} · {formatDateTime(error.lastSeen)} · {error.occurrences}{" "}
+                ocurrencias
               </p>
             </div>
-            <LevelBadge level={error.level} />
+            <StatusBadge {...logLevelStyles[error.level]} />
           </div>
           <pre className="mt-3 overflow-x-auto rounded-md bg-muted p-3 font-mono text-xs text-muted-foreground">
             {error.stack}
@@ -199,7 +195,9 @@ function FailedLoginsTab() {
                 <span className="text-sm text-muted-foreground">{attempt.location}</span>
               </TableCell>
               <TableCell>
-                <span className="text-sm text-muted-foreground">{timeAgo(attempt.timestamp)}</span>
+                <span className="text-sm text-muted-foreground">
+                  {timeAgo(attempt.timestamp)}
+                </span>
               </TableCell>
             </TableRow>
           ))}

@@ -3,22 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { AlertTriangle, Bell, CheckCheck, ChevronRight } from "lucide-react";
 
 import { data } from "@/data";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { timeAgo } from "@/lib/format";
+import { severityStyles } from "@/lib/status";
 import { cn } from "@/lib/utils";
-
-const severityVariant: Record<string, "destructive" | "warning" | "info"> = {
-  alta: "destructive",
-  media: "warning",
-  baja: "info",
-};
 
 // Panel de notificaciones: muestra las alertas abiertas y permite marcarlas
 // como leídas. El estado de lectura es local (demo sin backend).
@@ -92,13 +83,19 @@ export function NotificationsPanel() {
                       !read && "bg-accent/40",
                     )}
                   >
-                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                    <AlertTriangle
+                      className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
+                      aria-hidden="true"
+                    />
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center justify-between gap-2">
-                        <span className="truncate text-sm font-medium">{alert.title}</span>
-                        <Badge variant={severityVariant[alert.severity]} className="mono-label shrink-0 text-[10px]">
-                          {alert.severity}
-                        </Badge>
+                        <span className="truncate text-sm font-medium">
+                          {alert.title}
+                        </span>
+                        <StatusBadge
+                          {...severityStyles[alert.severity]}
+                          className="shrink-0"
+                        />
                       </span>
                       <span className="mt-0.5 line-clamp-2 block text-xs text-muted-foreground">
                         {alert.description}
@@ -108,7 +105,10 @@ export function NotificationsPanel() {
                       </span>
                     </span>
                     {!read && (
-                      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" aria-hidden="true" />
+                      <span
+                        className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary"
+                        aria-hidden="true"
+                      />
                     )}
                   </button>
                 </li>

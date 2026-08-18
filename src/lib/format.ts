@@ -2,7 +2,6 @@
 // respetar el locale del navegador.
 
 const numberFormat = new Intl.NumberFormat("es-ES");
-const compactFormat = new Intl.NumberFormat("es-ES", { notation: "compact", maximumFractionDigits: 1 });
 const currencyFormat = new Intl.NumberFormat("es-ES", {
   style: "currency",
   currency: "EUR",
@@ -22,10 +21,6 @@ const dateTimeFormat = new Intl.DateTimeFormat("es-ES", {
 
 export function formatNumber(value: number): string {
   return numberFormat.format(value);
-}
-
-export function formatCompact(value: number): string {
-  return compactFormat.format(value);
 }
 
 export function formatCurrency(value: number): string {
