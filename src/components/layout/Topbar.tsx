@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Bell, Menu, Search } from "lucide-react";
 
 import { pageTitleForPath } from "@/lib/nav";
@@ -22,6 +22,7 @@ interface TopbarProps {
 
 export function Topbar({ onOpenMenu, onOpenPalette }: TopbarProps) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const title = pageTitleForPath(pathname);
   const currentUser = data.users[0];
 
@@ -92,7 +93,7 @@ export function Topbar({ onOpenMenu, onOpenPalette }: TopbarProps) {
             </span>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Preferencias</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/perfil")}>Perfil</DropdownMenuItem>
           <DropdownMenuItem>Salir</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

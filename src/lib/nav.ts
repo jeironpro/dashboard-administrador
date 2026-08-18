@@ -50,8 +50,14 @@ export const navSections: NavSection[] = [
 // Lista plana para la command palette y la búsqueda.
 export const flatNav: NavItem[] = navSections.flatMap((section) => section.items);
 
+// Rutas fuera de la navegación lateral (ej. perfil) con su propio título.
+const extraTitles: Record<string, string> = {
+  "/perfil": "Perfil",
+};
+
 // Devuelve el título del item que coincide con la ruta actual.
 export function pageTitleForPath(pathname: string): string {
+  if (extraTitles[pathname]) return extraTitles[pathname];
   const match = flatNav.find((item) =>
     item.href === "/" ? pathname === "/" : pathname.startsWith(item.href),
   );

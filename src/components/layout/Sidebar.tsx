@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { X } from "lucide-react";
 
 import { navSections } from "@/lib/nav";
@@ -71,7 +71,10 @@ function SidebarContent() {
       </nav>
 
       <div className="border-t p-3">
-        <div className="flex items-center gap-3 rounded-md px-2 py-2">
+        <Link
+          to="/perfil"
+          className="flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted"
+        >
           <Avatar className="h-8 w-8">
             <AvatarFallback className="bg-accent text-xs text-accent-foreground">
               {initials(currentUser.name)}
@@ -81,7 +84,7 @@ function SidebarContent() {
             <p className="truncate text-sm font-medium">{currentUser.name}</p>
             <p className="mono-label text-[10px] text-muted-foreground">{currentUser.role}</p>
           </div>
-        </div>
+        </Link>
       </div>
     </div>
   );
