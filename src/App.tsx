@@ -5,6 +5,7 @@ import { Overview } from "@/pages/Overview";
 import { Content } from "@/pages/Content";
 import { Health } from "@/pages/Health";
 import { Logs } from "@/pages/Logs";
+import { Reports } from "@/pages/Reports";
 import { Settings } from "@/pages/Settings";
 import { Users } from "@/pages/Users";
 import { Placeholder } from "@/pages/Placeholder";
@@ -20,7 +21,7 @@ export default function App() {
           <Route path="auditoria" element={<Logs />} />
           <Route path="configuracion" element={<Settings />} />
           <Route path="salud" element={<Health />} />
-          <Route path="reportes" element={<Placeholder title="Reportes" />} />
+          <Route path="reportes" element={<Reports />} />
         </Route>
         <Route path="*" element={<Placeholder title="Página no encontrada" />} />
       </Routes>
