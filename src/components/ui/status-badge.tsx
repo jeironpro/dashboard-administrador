@@ -6,15 +6,15 @@ import type { BadgeVariant } from "@/lib/status";
 import { cn } from "@/lib/utils";
 
 interface StatusBadgeProps {
-  label: string;
-  variant: BadgeVariant;
-  className?: string;
+    label: string;
+    variant: BadgeVariant;
+    className?: string;
 }
 
 export function StatusBadge({ label, variant, className }: StatusBadgeProps) {
-  return (
-    <Badge variant={variant} className={cn("mono-label text-[10px]", className)}>
-      {label}
-    </Badge>
-  );
+    return (
+        <Badge variant={variant} className={cn("mono-label text-[10px]", className)}>
+            {label}
+        </Badge>
+    );
 }
