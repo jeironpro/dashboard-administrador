@@ -15,31 +15,34 @@ const Reports = lazy(() => import("@/pages/Reports"));
 const Profile = lazy(() => import("@/pages/Profile"));
 
 function PageLoader() {
-  return (
-    <div className="flex min-h-[50vh] items-center justify-center" aria-live="polite">
-      <span className="mono-label text-muted-foreground">cargando…</span>
-    </div>
-  );
+    return (
+        <div className="flex min-h-[50vh] items-center justify-center" aria-live="polite">
+            <span className="mono-label text-muted-foreground">cargando…</span>
+        </div>
+    );
 }
 
 export default function App() {
-  return (
-    <BrowserRouter>
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          <Route element={<AppShell />}>
-            <Route index element={<Overview />} />
-            <Route path="usuarios" element={<Users />} />
-            <Route path="contenido" element={<Content />} />
-            <Route path="auditoria" element={<Logs />} />
-            <Route path="configuracion" element={<Settings />} />
-            <Route path="salud" element={<Health />} />
-            <Route path="reportes" element={<Reports />} />
-            <Route path="perfil" element={<Profile />} />
-          </Route>
-          <Route path="*" element={<Placeholder title="Página no encontrada" />} />
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
-  );
+    return (
+        <BrowserRouter>
+            <Suspense fallback={<PageLoader />}>
+                <Routes>
+                    <Route element={<AppShell />}>
+                        <Route index element={<Overview />} />
+                        <Route path="usuarios" element={<Users />} />
+                        <Route path="contenido" element={<Content />} />
+                        <Route path="auditoria" element={<Logs />} />
+                        <Route path="configuracion" element={<Settings />} />
+                        <Route path="salud" element={<Health />} />
+                        <Route path="reportes" element={<Reports />} />
+                        <Route path="perfil" element={<Profile />} />
+                    </Route>
+                    <Route
+                        path="*"
+                        element={<Placeholder title="Página no encontrada" />}
+                    />
+                </Routes>
+            </Suspense>
+        </BrowserRouter>
+    );
 }
