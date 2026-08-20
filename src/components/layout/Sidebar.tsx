@@ -22,9 +22,12 @@ function SidebarContent() {
         aria-label="Ir al inicio"
         className="flex h-16 items-center gap-3 border-b px-5 transition-colors hover:bg-muted/60"
       >
-        <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary font-heading text-sm font-bold text-primary-foreground">
-          N
-        </span>
+        <img
+          src="/favicon.svg"
+          alt=""
+          aria-hidden="true"
+          className="h-8 w-8 shrink-0"
+        />
         <div className="flex flex-col leading-tight">
           <span className="font-heading text-sm font-semibold tracking-tight">Nexo</span>
           <span className="mono-label text-[10px] text-muted-foreground">
